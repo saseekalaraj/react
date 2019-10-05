@@ -77,14 +77,17 @@ export default class project extends Component {
     constructor(){
         super();
         this.state={
+            defect:'',
             severity:'',
             priority:'',
-            projectID:''
+            projectID:'',
+            defectDescription:''
 
         }
     }
      handleChange = event => {
         this.setState({[event.target.name]:event.target.value});
+        console.log(this.state)
       };
     render() {
         const classes=styles
@@ -135,6 +138,9 @@ export default class project extends Component {
                                 placeholder="Enter Defectname"
                                 fullWidth
                                 margin="normal"
+                                name="defect"
+                                onChange={this.handleChange}
+                                value={this.state.defect}
                                 InputLabelProps={{
                                 shrink: true,
                                 }}
@@ -147,6 +153,9 @@ export default class project extends Component {
                                 style={{ marginTop: '2%',width:'90%',marginLeft:'5%',textAlign:'center' }}
                                 placeholder="Enter Defect Description"
                                 fullWidth
+                                name="defectDescription"
+                                onChange={this.handleChange}
+                                value={this.state.defectDescription}
                                 margin="normal"
                                 InputLabelProps={{
                                 shrink: true,
