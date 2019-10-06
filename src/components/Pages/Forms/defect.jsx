@@ -16,6 +16,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
+import axios from 'axios'
 
 const cardWidth='80%'
 const styles = makeStyles(theme=>({
@@ -85,10 +86,25 @@ export default class project extends Component {
 
         }
     }
+    componentDidMount(){
+        const url= `http://127.0.0.1:8081/defect/api/v1/project`
+        axios.get(url)
+        .then(response=>{
+            
+        })
+    }
      handleChange = event => {
         this.setState({[event.target.name]:event.target.value});
-        console.log(this.state)
-      };
+      }
+      handleSubmit=event=>{
+        event.preventDefault()
+        const data={defect:this.state.defect,defectdesc:this.state.defectDescription,project:{id:this.state.projectID},priority:this.state.priority,severity:this.state.severity}
+        const url =`http://127.0.0.1:8081/defect/api/v1/defect`
+        axios.post(url,data)
+        .then(response=>{
+            console.log(response)
+        })
+      }
     render() {
         const classes=styles
         return (
@@ -114,7 +130,7 @@ export default class project extends Component {
                             </Breadcrumbs>
                             </Paper>
                             <Divider />
-                            <form>
+                            <form onSubmit={this.handleSubmit}>
                              <Grid
                               container
                               direction="row"
@@ -220,7 +236,7 @@ export default class project extends Component {
                             </FormControl> 
                                 </Grid>
                             <Grid item xs={12} >
-                            <Button variant="outlined" color="primary" style={{marginBottom:'5%',marginTop:'2%',marginLeft:'50%',transform:'translate(-50%)',width:'25%'}}>
+                            <Button variant="outlined" color="primary" style={{marginBottom:'5%',marginTop:'2%',marginLeft:'50%',transform:'translate(-50%)',width:'25%'}} type="submit">
                                 Save Defect
                             </Button>
                             </Grid>
