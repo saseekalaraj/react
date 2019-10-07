@@ -48,7 +48,6 @@ const styles = makeStyles(theme=>({
       
 }))
   var columns= [
-    { title: 'Project ID', field: 'id' },
     { title: 'Project Name', field: 'projectname' },
     { title: 'Project Description', field: 'projectdesc' },
   ]
@@ -73,7 +72,7 @@ export default class project extends Component {
         const url=`http://localhost:8081/defect/api/v1/project`
         axios.post(url,{projectname:this.state.projectName,projectdesc:this.state.projectDescription})
         .then(response=>{
-            if(response.status){
+            if(response.status===200){
             this.handleClick()
             this.componentDidMount()
             }

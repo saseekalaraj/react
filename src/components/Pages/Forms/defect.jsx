@@ -17,6 +17,8 @@ import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import axios from 'axios'
+import Snackbar from '@material-ui/core/Snackbar';
+
 
 const cardWidth='80%'
 const styles = makeStyles(theme=>({
@@ -58,12 +60,7 @@ const Level = [
     'High',
     
   ];
-  const projectIDS = [
-    '1',
-    '2',
-    '5',
-    
-  ];
+
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -82,7 +79,9 @@ export default class project extends Component {
             severity:'',
             priority:'',
             projectID:'',
-            defectDescription:''
+            open:false,
+            defectDescription:'',
+            projectidsfromproject:[]
 
         }
     }
@@ -90,6 +89,9 @@ export default class project extends Component {
         const url= `http://127.0.0.1:8081/defect/api/v1/project`
         axios.get(url)
         .then(response=>{
+            this.setState({
+                projectidsfromproject:response.data
+            })
             
         })
     }
@@ -102,11 +104,22 @@ export default class project extends Component {
         const url =`http://127.0.0.1:8081/defect/api/v1/defect`
         axios.post(url,data)
         .then(response=>{
-            console.log(response)
+            if(response.status === 200){
+                this.handleClick()
+                this.componentDidMount()
+                }
         })
       }
+      handleClick = () => {
+        this.setState({ open: true});
+      };
+       handleClose = () => {
+       this.setState({ open: false });
+      };
     render() {
         const classes=styles
+        const vertical= 'top'
+        const horizontal= 'center'
         return (
             <div className={classes.root}>
                 <Grid 
@@ -227,9 +240,9 @@ export default class project extends Component {
                                 MenuProps={MenuProps}
                                
                                 >
-                                {projectIDS.map((lavel,intex) => (
-                                    <MenuItem key={intex} value={lavel} >
-                                    {lavel}
+                                {this.state.projectidsfromproject.map((lavel,intex) => (
+                                    <MenuItem key={intex} value={lavel.id} >
+                                    {lavel.id}
                                     </MenuItem>
                                 ))}
                                 </Select>
@@ -245,6 +258,16 @@ export default class project extends Component {
                         </Card>
                     </Grid>
                 </Grid>
+                <Snackbar
+                    anchorOrigin={{vertical, horizontal}}
+                    key={`${vertical},${horizontal}`}
+                    open={this.state.open}
+                    onClose={this.handleClose}
+                    ContentProps={{
+                    'aria-describedby': 'message-id',
+                    }}
+                    message={<span id="message-id">Success</span>}
+                />
             </div>
         )
     }
