@@ -102,13 +102,18 @@ export default class project extends Component {
         const url=`http://localhost:8081/defect/api/v1/project/${id}`
         axios.put(url,data)
         .then(response=>{
-           
+                if(response.status===200){
+                    this.handleClick()
+                }
         })
     }
     projectDelete=(id)=>{
         const url=`http://localhost:8081/defect/api/v1/project/${id}`
         axios.delete(url)
         .then(response=>{
+            if(response.status===200){
+                this.handleClick()
+               }
         })
     }
     
@@ -258,7 +263,6 @@ export default class project extends Component {
                     }}
                     />
                 </Grid>
-
                 </Grid>
             </div>
         )

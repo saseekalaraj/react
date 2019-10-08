@@ -18,6 +18,7 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import axios from 'axios'
 import Snackbar from '@material-ui/core/Snackbar';
+import MaterialTable from 'material-table';
 
 
 const cardWidth='80%'
@@ -60,7 +61,13 @@ const Level = [
     'High',
     
   ];
-
+  var columns= [
+    { title: 'Defect', field: 'defect' },
+    { title: 'Defect Description', field: 'defectdesc' },
+    { title: 'Severity', field: 'severity' },
+    { title: 'Priority', field: 'priority' },
+    { title: 'Project ID', field: 'project.id' },
+  ]
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -81,18 +88,26 @@ export default class project extends Component {
             projectID:'',
             open:false,
             defectDescription:'',
-            projectidsfromproject:[]
+            projectidsfromproject:[],
+            data:[]
 
         }
     }
     componentDidMount(){
-        const url= `http://127.0.0.1:8081/defect/api/v1/project`
-        axios.get(url)
+        const projectUrl= `http://127.0.0.1:8081/defect/api/v1/project`
+        axios.get(projectUrl)
         .then(response=>{
             this.setState({
                 projectidsfromproject:response.data
             })
             
+        })
+        const defectUrl=`http://127.0.0.1:8081/defect/api/v1/defect`
+        axios.get(defectUrl)
+        .then(response=>{
+            this.setState({
+                data:response.data
+            })
         })
     }
      handleChange = event => {
@@ -116,6 +131,24 @@ export default class project extends Component {
        handleClose = () => {
        this.setState({ open: false });
       };
+      projectUpdate=(id,data)=>{
+        const url=`http://localhost:8081/defect/api/v1/defect/${id}`
+        axios.put(url,data)
+        .then(response=>{
+                if(response.status===200){
+                    this.handleClick()
+                }
+        })
+    }
+    projectDelete=(id)=>{
+        const url=`http://localhost:8081/defect/api/v1/defect/${id}`
+        axios.delete(url)
+        .then(response=>{
+            if(response.status===200){
+                this.handleClick()
+               }
+        })
+    }
     render() {
         const classes=styles
         const vertical= 'top'
@@ -268,6 +301,51 @@ export default class project extends Component {
                     }}
                     message={<span id="message-id">Success</span>}
                 />
+                   <Grid
+                    container 
+                    direction="row"
+                    justify="flex-start"
+                    alignItems="center"
+                >
+                <Grid item xs={12}>
+                <MaterialTable
+                    title="Editable Example"
+                    columns={columns}
+                    data={this.state.data}
+                    editable={{
+                        onRowAdd: newData =>
+                        new Promise(resolve => {
+                            setTimeout(() => {
+                            resolve();
+                            const data = [...this.state.data];
+                            data.push(newData);
+                            this.setState({ ...this.state, data });
+                            }, 600);
+                        }),
+                        onRowUpdate: (newData, oldData) =>
+                        new Promise(resolve => {
+                            setTimeout(() => {
+                            resolve();
+                            const data = [...this.state.data];
+                            data[data.indexOf(oldData)] = newData;
+                            this.setState({ ...this.state.data, data });
+                            this.projectUpdate(newData.id,newData)
+                            }, 600);
+                        }),
+                        onRowDelete: oldData =>
+                        new Promise(resolve => {
+                            setTimeout(() => {
+                            resolve();
+                            const data = [...this.state.data];
+                            data.splice(data.indexOf(oldData), 1);
+                            this.setState({ ...this.state.data, data });
+                            this.projectDelete(oldData.id)
+                            }, 600);
+                        }),
+                    }}
+                    />
+                </Grid>
+                </Grid>
             </div>
         )
     }
